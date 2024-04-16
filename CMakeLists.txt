@@ -54,6 +54,8 @@ else()
         add_executable(netrunner_card_finder
             ${PROJECT_SOURCES}
             cards.json
+            simdjson.cpp
+            include/simdjson.h
 
         )
     endif()

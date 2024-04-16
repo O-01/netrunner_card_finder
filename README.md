@@ -3,13 +3,16 @@
 
 ### **README UNDER CONSTRUCTION**
 #### Confirmed supported only under GNU/Linux OS at this time.
-#### Requirements:
-- **GNU Make**
-- **CMake 3.5+**
-- **Qt5**
-- **Qt6**
-- **libcurl**
-- **nlohmann JSON** (included in repo - may switch to **simdjson** for speed (also included))
+### Requirements:
+- `GNU Make`
+- `CMake 3.5+`
+- `Qt5/Qt6`
+- `libcurl`
+- `simdjson` (included)
+
+#### If using `image_grabber.py` to download cards.json data or card images:
+- `Python 3.11+` with `json`, `pathlib`, `socket`, and `urllib` libraries
+
 ###### Compiled and tested with GCC v13.2.1 (20230801).
 ### Easy compilation:
 #### Navigate to repository root directory and run the following command:
