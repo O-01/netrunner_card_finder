@@ -46,12 +46,9 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    // hide widgets until interaction properly detailed
-    // ui->dropFaction->hide();
+    // hide widgets until interaction properly detailed:
     ui->dropFormat->hide();
     ui->dropSet->hide();
-    // ui->dropSide->hide();
-    // ui->dropType->hide();
     // hide search bar widget that reacts upon return pressed
     ui->lineEdit->hide();
 
@@ -203,8 +200,9 @@ void MainWindow::on_resetButton_clicked()
     ui->cardList->setCurrentItem(nullptr);
     ui->cardList->clear();
     ui->searchField->clear();
-    // below conditions need to be fixed
-    // causes second call of current function if true (up to 6 calls?)
+
+    // below conditions need to be fixed - causes second call of current
+    // function if true (up to 6 calls?)
     if (ui->dropSide->currentIndex())
         ui->dropSide->setCurrentIndex(0);
     if (ui->dropFaction->currentIndex())
@@ -230,15 +228,6 @@ void MainWindow::on_resetButton_clicked()
 
 void MainWindow::on_dropSide_currentTextChanged(const QString &arg1)
 {
-    // if (!ui->dropFaction->currentIndex() &&
-    //     !ui->dropType->currentIndex()
-    // )
-    //     ui->cardList->clear();
-    // if (!ui->dropSide->currentIndex())
-    // {
-    //     MainWindow::on_resetButton_clicked();
-    //     return;
-    // }
     ui->cardList->setCurrentItem(nullptr);
     ui->cardList->clear();
     std::string side_select = arg1.toStdString().c_str();
