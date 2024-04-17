@@ -21,17 +21,22 @@ public:
 private slots:
     void on_cardList_itemClicked(QListWidgetItem *item);
 
-    void on_dropFormat_currentIndexChanged(int index);
-
     void on_searchField_textChanged();
 
     void on_cardList_itemSelectionChanged();
 
-    void on_cardList_currentRowChanged(int currentRow);
-
     void on_lineEdit_returnPressed();
+
+    void on_resetButton_clicked();
+
+    void on_dropSide_currentTextChanged(const QString &arg1);
+
+    void on_dropFaction_currentTextChanged(const QString &arg1);
+
+    void on_dropType_currentTextChanged(const QString &arg1);
 
 private:
     Ui::MainWindow *ui;
 };
+
 #endif // MAINWINDOW_H

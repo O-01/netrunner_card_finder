@@ -3,35 +3,58 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-#include <curl/curl.h>
+#include <QLabel>
 #include "include/simdjson.h"
 #include "./ui_mainwindow.h"
 
 using namespace simdjson;
 
-static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
+static void to_lower(std::string *input)
 {
-    ((std::string *)userp)->append((char *)contents, size * nmemb);
-    return size * nmemb;
+    std::transform(
+        (*input).begin(),
+        (*input).end(),
+        (*input).begin(),
+        [](unsigned char c){ return std::tolower(c); }
+    );
+}
+
+static void delim_to_underscore(std::string *input)
+{
+    std::replace((*input).begin(), (*input).end(), '-', '_');
+    std::replace((*input).begin(), (*input).end(), ' ', '_');
+}
+
+static void clear_grid(QLayout *layout, bool delete_all = true)
+{
+    while (QLayoutItem *element = layout->takeAt(0))
+    {
+        if (delete_all)
+        {
+            if (QWidget *widget = element->widget())
+                widget->deleteLater();
+        }
+        if (QLayout *child = element->layout())
+            clear_grid(child, delete_all);
+        delete element;
+    }
 }
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
-    // std::cout << std::filesystem::current_path().string() << '\n';
     ui->setupUi(this);
 
-    // std::string curlRead;
-    // auto curl = curl_easy_init();
-    // if (curl)
-    // {
-    //     curl_easy_setopt(curl, CURLOPT_URL, "https://api-preview.netrunnerdb.com/api/v3/public/cards?page[limit]=9999");
-    //     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-    //     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &curlRead);
-    //     curl_easy_perform(curl);
-    //     curl_easy_cleanup(curl);
-    // }
+    // hide widgets until interaction properly detailed
+    // ui->dropFaction->hide();
+    ui->dropFormat->hide();
+    ui->dropSet->hide();
+    // ui->dropSide->hide();
+    // ui->dropType->hide();
+    // hide search bar widget that reacts upon return pressed
+    ui->lineEdit->hide();
+
     dom::parser parser;
     dom::element data;
     auto error = parser.load("../cards.json").get(data);
@@ -48,11 +71,15 @@ MainWindow::MainWindow(QWidget *parent)
     }
 }
 
-MainWindow::~MainWindow() { delete ui; }
-
+MainWindow::~MainWindow()
+{
+    clear_grid(ui->gridLayout->layout(), 1);
+    delete ui;
+}
 
 void MainWindow::on_cardList_itemClicked(QListWidgetItem *item)
 {
+    clear_grid(ui->gridLayout->layout(), 1);
     std::string item_name = item->text().toStdString();
     dom::parser parser;
     dom::element data;
@@ -66,23 +93,31 @@ void MainWindow::on_cardList_itemClicked(QListWidgetItem *item)
     for (dom::element element : data)
     {
         std::string_view title = element["attributes"]["title"];
-        (void)title;
-        // if (std::strstr(title.data(), item_name.c_str()))
-            // ui->gridLayout->addItem();
+        if (std::strstr(title.data(), item_name.c_str()) == title.data())
+        {
+            dom::array printing = element["attributes"]["printing_ids"];
+            int row = 0, col = 0;
+            for (size_t iter = 0; iter < printing.size(); ++iter)
+            {
+                std::stringstream image_path;
+                image_path << "../images/" << printing.at(iter).get_string() << ".jpg";
+                QPixmap image(image_path.str().c_str());
+                QLabel *img_label = new QLabel();
+                img_label->setPixmap(image.scaled(300, 420, Qt::KeepAspectRatio));
+                ui->gridLayout->addWidget(img_label, row, col, Qt::AlignTop | Qt::AlignLeft);
+                if (++col >= 2)
+                    col = 0, ++row;
+            }
+        }
     }
 }
-
-
-void MainWindow::on_dropFormat_currentIndexChanged(int index)
-{
-    ;
-}
-
 
 void MainWindow::on_searchField_textChanged()
 {
+    ui->cardList->setCurrentItem(nullptr);
     ui->cardList->clear();
-    std::string searchText = ui->searchField->toPlainText().toStdString();
+    std::string search_text = ui->searchField->toPlainText().toStdString();
+    to_lower(&search_text);
     dom::parser parser;
     dom::element data;
     auto error = parser.load("../cards.json").get(data);
@@ -95,28 +130,19 @@ void MainWindow::on_searchField_textChanged()
     for (dom::element element : data)
     {
         std::string_view title = element["attributes"]["title"];
-        if (std::strstr(title.data(), searchText.c_str()))
+        std::string title_lower = {title.begin(), title.end()};
+        to_lower(&title_lower);
+        if (std::strstr(title_lower.c_str(), search_text.c_str()))
             ui->cardList->addItem(tr(title.data()));
     }
 }
-
 
 void MainWindow::on_cardList_itemSelectionChanged()
 {
-    ;
-}
-
-
-void MainWindow::on_cardList_currentRowChanged(int currentRow)
-{
-    ;
-}
-
-
-void MainWindow::on_lineEdit_returnPressed()
-{
-    ui->cardList->clear();
-    std::string searchText = ui->lineEdit->text().toStdString();
+    clear_grid(ui->gridLayout->layout(), 1);
+    if (!ui->cardList->currentItem())
+        return;
+    std::string item_name = ui->cardList->currentItem()->text().toStdString();
     dom::parser parser;
     dom::element data;
     auto error = parser.load("../cards.json").get(data);
@@ -129,8 +155,217 @@ void MainWindow::on_lineEdit_returnPressed()
     for (dom::element element : data)
     {
         std::string_view title = element["attributes"]["title"];
-        if (std::strstr(title.data(), searchText.c_str()))
+        if (std::strstr(title.data(), item_name.c_str()) == title.data())
+        {
+            dom::array printing = element["attributes"]["printing_ids"];
+            int row = 0, col = 0;
+            for (size_t iter = 0; iter < printing.size(); ++iter)
+            {
+                std::stringstream image_path;
+                image_path << "../images/" << printing.at(iter).get_string() << ".jpg";
+                QPixmap image(image_path.str().c_str());
+                QLabel *img_label = new QLabel();
+                img_label->setPixmap(image.scaled(300, 420, Qt::KeepAspectRatio));
+                ui->gridLayout->addWidget(img_label, row, col, Qt::AlignTop | Qt::AlignLeft);
+                if (++col >= 2)
+                    col = 0, ++row;
+            }
+        }
+    }
+}
+
+void MainWindow::on_lineEdit_returnPressed()
+{
+    ui->cardList->setCurrentItem(nullptr);
+    ui->cardList->clear();
+    ui->searchField->clear();
+    std::string search_text = ui->lineEdit->text().toStdString();
+    to_lower(&search_text);
+    dom::parser parser;
+    dom::element data;
+    auto error = parser.load("../cards.json").get(data);
+    if (error)
+    {
+        std::cerr << "Failed to parse JSON: " << error << std::endl;
+        return;
+    }
+    data = data["data"];
+    for (dom::element element : data)
+    {
+        std::string_view title = element["attributes"]["title"];
+        if (std::strstr(title.data(), search_text.c_str()))
             ui->cardList->addItem(tr(title.data()));
     }
 }
 
+void MainWindow::on_resetButton_clicked()
+{
+    ui->cardList->setCurrentItem(nullptr);
+    ui->cardList->clear();
+    ui->searchField->clear();
+    // below conditions need to be fixed
+    // causes second call of current function if true (up to 6 calls?)
+    if (ui->dropSide->currentIndex())
+        ui->dropSide->setCurrentIndex(0);
+    if (ui->dropFaction->currentIndex())
+        ui->dropFaction->setCurrentIndex(0);
+    if (ui->dropType->currentIndex())
+        ui->dropType->setCurrentIndex(0);
+
+    dom::parser parser;
+    dom::element data;
+    auto error = parser.load("../cards.json").get(data);
+    if (error)
+    {
+        std::cerr << "Failed to parse JSON: " << error << std::endl;
+        return;
+    }
+    data = data["data"];
+    for (dom::element element : data)
+    {
+        std::string_view title = element["attributes"]["title"];
+        ui->cardList->addItem(tr(title.data()));
+    }
+}
+
+void MainWindow::on_dropSide_currentTextChanged(const QString &arg1)
+{
+    // if (!ui->dropFaction->currentIndex() &&
+    //     !ui->dropType->currentIndex()
+    // )
+    //     ui->cardList->clear();
+    // if (!ui->dropSide->currentIndex())
+    // {
+    //     MainWindow::on_resetButton_clicked();
+    //     return;
+    // }
+    ui->cardList->setCurrentItem(nullptr);
+    ui->cardList->clear();
+    std::string side_select = arg1.toStdString().c_str();
+    to_lower(&side_select);
+    dom::parser parser;
+    dom::element data;
+    auto error = parser.load("../cards.json").get(data);
+    if (error)
+    {
+        std::cerr << "Failed to parse JSON: " << error << std::endl;
+        return;
+    }
+    data = data["data"];
+    for (dom::element element : data)
+    {
+        std::string_view side = element["attributes"]["side_id"];
+        if (std::strstr(side.data(), side_select.c_str()) ||
+            !ui->dropSide->currentIndex())
+        {
+            if (ui->dropFaction->currentIndex())
+            {
+                std::string faction_select = ui->dropFaction->currentText().toStdString();
+                to_lower(&faction_select);
+                delim_to_underscore(&faction_select);
+                std::string_view faction = element["attributes"]["faction_id"];
+                if (!std::strstr(faction.data(), faction_select.c_str()))
+                    continue;
+            }
+            if (ui->dropType->currentIndex())
+            {
+                std::string type_select = ui->dropType->currentText().toStdString();
+                to_lower(&type_select);
+                std::string_view type = element["attributes"]["card_type_id"];
+                if (!std::strstr(type.data(), type_select.c_str()))
+                    continue;
+            }
+            std::string_view title = element["attributes"]["title"];
+            ui->cardList->addItem(tr(title.data()));
+        }
+    }
+}
+
+void MainWindow::on_dropFaction_currentTextChanged(const QString &arg1)
+{
+    ui->cardList->setCurrentItem(nullptr);
+    ui->cardList->clear();
+    std::string faction_select = arg1.toStdString().c_str();
+    to_lower(&faction_select);
+    delim_to_underscore(&faction_select);
+    std::cout << faction_select << std::endl;
+    dom::parser parser;
+    dom::element data;
+    auto error = parser.load("../cards.json").get(data);
+    if (error)
+    {
+        std::cerr << "Failed to parse JSON: " << error << std::endl;
+        return;
+    }
+    data = data["data"];
+    for (dom::element element : data)
+    {
+        std::string_view faction = element["attributes"]["faction_id"];
+        if (std::strstr(faction.data(), faction_select.c_str()) ||
+            !ui->dropFaction->currentIndex())
+        {
+            if (ui->dropSide->currentIndex())
+            {
+                std::string side_select = ui->dropSide->currentText().toStdString();
+                to_lower(&side_select);
+                std::string_view side = element["attributes"]["side_id"];
+                if (!std::strstr(side.data(), side_select.c_str()))
+                    continue;
+            }
+            if (ui->dropType->currentIndex())
+            {
+                std::string type_select = ui->dropType->currentText().toStdString();
+                to_lower(&type_select);
+                std::string_view type = element["attributes"]["card_type_id"];
+                if (!std::strstr(type.data(), type_select.c_str()))
+                    continue;
+            }
+            std::string_view title = element["attributes"]["title"];
+            ui->cardList->addItem(tr(title.data()));
+        }
+    }
+}
+
+void MainWindow::on_dropType_currentTextChanged(const QString &arg1)
+{
+    ui->cardList->setCurrentItem(nullptr);
+    ui->cardList->clear();
+    std::string type_select = arg1.toStdString().c_str();
+    to_lower(&type_select);
+    dom::parser parser;
+    dom::element data;
+    auto error = parser.load("../cards.json").get(data);
+    if (error)
+    {
+        std::cerr << "Failed to parse JSON: " << error << std::endl;
+        return;
+    }
+    data = data["data"];
+    for (dom::element element : data)
+    {
+        std::string_view card_type = element["attributes"]["card_type_id"];
+        if (std::strstr(card_type.data(), type_select.c_str()) ||
+            !ui->dropType->currentIndex())
+        {
+            if (ui->dropSide->currentIndex())
+            {
+                std::string side_select = ui->dropSide->currentText().toStdString();
+                to_lower(&side_select);
+                std::string_view side = element["attributes"]["side_id"];
+                if (!std::strstr(side.data(), side_select.c_str()))
+                    continue;
+            }
+            if (ui->dropFaction->currentIndex())
+            {
+                std::string faction_select = ui->dropFaction->currentText().toStdString();
+                to_lower(&faction_select);
+                delim_to_underscore(&faction_select);
+                std::string_view faction = element["attributes"]["faction_id"];
+                if (!std::strstr(faction.data(), faction_select.c_str()))
+                    continue;
+            }
+            std::string_view title = element["attributes"]["title"];
+            ui->cardList->addItem(tr(title.data()));
+        }
+    }
+}
