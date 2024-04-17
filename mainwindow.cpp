@@ -178,8 +178,8 @@ void MainWindow::on_resetButton_clicked()
     ui->cardList->clear();
     ui->searchField->clear();
 
-    // below conditions need to be fixed - causes second call of current
-    // function if true (up to 6 calls?)
+    // below conditions need to be fixed
+    // these operations take longer than they ought to
     if (ui->dropSide->currentIndex())
         ui->dropSide->setCurrentIndex(0);
     if (ui->dropFaction->currentIndex())
