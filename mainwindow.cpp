@@ -40,6 +40,18 @@ static void clear_grid(QLayout *layout, bool delete_all = true)
     }
 }
 
+static dom::element get_data(dom::parser& parser)
+{
+    dom::element data;
+    auto error = parser.load("../cards.json").get(data);
+    if (error)
+    {
+        std::cerr << "Failed to parse JSON: " << error << std::endl;
+        std::exit(1);
+    }
+    return data["data"];
+}
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -53,14 +65,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->lineEdit->hide();
 
     dom::parser parser;
-    dom::element data;
-    auto error = parser.load("../cards.json").get(data);
-    if (error)
-    {
-        std::cerr << "Failed to parse JSON: " << error << std::endl;
-        return;
-    }
-    data = data["data"];
+    dom::element data = get_data(parser);
     for (dom::element element : data)
     {
         std::string_view title = element["attributes"]["title"];
@@ -79,14 +84,7 @@ void MainWindow::on_cardList_itemClicked(QListWidgetItem *item)
     clear_grid(ui->gridLayout->layout(), 1);
     std::string item_name = item->text().toStdString();
     dom::parser parser;
-    dom::element data;
-    auto error = parser.load("../cards.json").get(data);
-    if (error)
-    {
-        std::cerr << "Failed to parse JSON: " << error << std::endl;
-        return;
-    }
-    data = data["data"];
+    dom::element data = get_data(parser);
     for (dom::element element : data)
     {
         std::string_view title = element["attributes"]["title"];
@@ -116,14 +114,7 @@ void MainWindow::on_searchField_textChanged()
     std::string search_text = ui->searchField->toPlainText().toStdString();
     to_lower(&search_text);
     dom::parser parser;
-    dom::element data;
-    auto error = parser.load("../cards.json").get(data);
-    if (error)
-    {
-        std::cerr << "Failed to parse JSON: " << error << std::endl;
-        return;
-    }
-    data = data["data"];
+    dom::element data = get_data(parser);
     for (dom::element element : data)
     {
         std::string_view title = element["attributes"]["title"];
@@ -141,14 +132,7 @@ void MainWindow::on_cardList_itemSelectionChanged()
         return;
     std::string item_name = ui->cardList->currentItem()->text().toStdString();
     dom::parser parser;
-    dom::element data;
-    auto error = parser.load("../cards.json").get(data);
-    if (error)
-    {
-        std::cerr << "Failed to parse JSON: " << error << std::endl;
-        return;
-    }
-    data = data["data"];
+    dom::element data = get_data(parser);
     for (dom::element element : data)
     {
         std::string_view title = element["attributes"]["title"];
@@ -179,14 +163,7 @@ void MainWindow::on_lineEdit_returnPressed()
     std::string search_text = ui->lineEdit->text().toStdString();
     to_lower(&search_text);
     dom::parser parser;
-    dom::element data;
-    auto error = parser.load("../cards.json").get(data);
-    if (error)
-    {
-        std::cerr << "Failed to parse JSON: " << error << std::endl;
-        return;
-    }
-    data = data["data"];
+    dom::element data = get_data(parser);
     for (dom::element element : data)
     {
         std::string_view title = element["attributes"]["title"];
@@ -211,14 +188,7 @@ void MainWindow::on_resetButton_clicked()
         ui->dropType->setCurrentIndex(0);
 
     dom::parser parser;
-    dom::element data;
-    auto error = parser.load("../cards.json").get(data);
-    if (error)
-    {
-        std::cerr << "Failed to parse JSON: " << error << std::endl;
-        return;
-    }
-    data = data["data"];
+    dom::element data = get_data(parser);
     for (dom::element element : data)
     {
         std::string_view title = element["attributes"]["title"];
@@ -233,14 +203,7 @@ void MainWindow::on_dropSide_currentTextChanged(const QString &arg1)
     std::string side_select = arg1.toStdString().c_str();
     to_lower(&side_select);
     dom::parser parser;
-    dom::element data;
-    auto error = parser.load("../cards.json").get(data);
-    if (error)
-    {
-        std::cerr << "Failed to parse JSON: " << error << std::endl;
-        return;
-    }
-    data = data["data"];
+    dom::element data = get_data(parser);
     for (dom::element element : data)
     {
         std::string_view side = element["attributes"]["side_id"];
@@ -277,16 +240,8 @@ void MainWindow::on_dropFaction_currentTextChanged(const QString &arg1)
     std::string faction_select = arg1.toStdString().c_str();
     to_lower(&faction_select);
     delim_to_underscore(&faction_select);
-    std::cout << faction_select << std::endl;
     dom::parser parser;
-    dom::element data;
-    auto error = parser.load("../cards.json").get(data);
-    if (error)
-    {
-        std::cerr << "Failed to parse JSON: " << error << std::endl;
-        return;
-    }
-    data = data["data"];
+    dom::element data = get_data(parser);
     for (dom::element element : data)
     {
         std::string_view faction = element["attributes"]["faction_id"];
@@ -322,14 +277,7 @@ void MainWindow::on_dropType_currentTextChanged(const QString &arg1)
     std::string type_select = arg1.toStdString().c_str();
     to_lower(&type_select);
     dom::parser parser;
-    dom::element data;
-    auto error = parser.load("../cards.json").get(data);
-    if (error)
-    {
-        std::cerr << "Failed to parse JSON: " << error << std::endl;
-        return;
-    }
-    data = data["data"];
+    dom::element data = get_data(parser);
     for (dom::element element : data)
     {
         std::string_view card_type = element["attributes"]["card_type_id"];
