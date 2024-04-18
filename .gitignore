@@ -3,4 +3,5 @@ vgcore*
 test_*
 build-nrcf
 build_nrcf
+nrcf
 .vscode
