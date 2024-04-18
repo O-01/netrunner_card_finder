@@ -68,4 +68,4 @@ chmod -v 744 image_grabber.py
 - Complete search reset is slower than ideal (see comments in source).
 #
 ### Author:
-Sam Ansari : [GitHub](https://github.com/O-01) | [LinkedIn](www.linkedin.com/in/sammy-ansari)
+- Sam Ansari : [GitHub](https://github.com/O-01) | [LinkedIn](www.linkedin.com/in/sammy-ansari)
