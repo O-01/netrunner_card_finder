@@ -13,19 +13,16 @@
 - Drop-down boxes available to further filter cards by side, faction, or type.
 - Clear images displayed tidily in a grid.
 - Simple compilation and launch steps.
-#
-### Screenshots:
 
 #
 ### Requirements:
-- `GNU Make`
-- `CMake 3.5+`
-- `Qt5/Qt6`
-- `libcurl`
-- `simdjson` (included)
-- Reasonably up-to-date version of `GCC` - compiled and tested with v13.2.1 (release 20230801)
+- [`GNU Make`](https://www.gnu.org/software/make/)
+- [`CMake 3.5+`](https://cmake.org/)
+- [`Qt5/Qt6`](https://invent.kde.org/qt/qt/qt5)
+- [`simdjson`](https://github.com/simdjson/simdjson/) (included)
+- Reasonably up-to-date version of [`GCC`](https://gcc.gnu.org/) - compiled and tested with v13.2.1 (release 20230801)
 
-Confirmed supported only under `GNU/Linux` OS at this time.
+Confirmed supported only under `GNU/Linux` OS at this time - may work elsewhere.
 
 If using `image_grabber.py` to download `cards.json` data or card images:
 - `Python 3.11+` with `json`, `pathlib`, `socket`, and `urllib` libraries
@@ -49,6 +46,15 @@ chmod -v 744 image_grabber.py
 ```
 - If updating `cards.json`, be sure to rename, backup/move, or delete the existing `cards.json` file.
 #
+### Screenshots:
+**NOTE: Screenshots taken on KDE Plasma with 'krita blender' color theme - may appear differently based on local software.**
+
+![screenshot_2](https://github.com/O-01/netrunner_card_finder/assets/122712385/ecc74e66-6379-4e1b-a0af-12dd51896272)
+![screenshot_3](https://github.com/O-01/netrunner_card_finder/assets/122712385/1c316864-5965-4bec-9530-bbabcbf6b43c)
+![screenshot_1](https://github.com/O-01/netrunner_card_finder/assets/122712385/94bb08ca-73d9-4aef-b1e0-454a9857cf83)
+![screenshot_4](https://github.com/O-01/netrunner_card_finder/assets/122712385/0f672ce7-e47d-4b71-93ff-0924b66d327f)
+
+#
 ### Possible future improvements:
 - Reduce any remaining redundancies.
 - Improve card image grid layout to better support the possible release of new printings of already existing cards.
@@ -59,3 +65,6 @@ chmod -v 744 image_grabber.py
 #
 ### Known issues:
 - Complete search reset is slower than ideal (see comments in source).
+#
+### Author:
+Sam Ansari : [GitHub](https://github.com/O-01) | [LinkedIn](www.linkedin.com/in/sammy-ansari)
