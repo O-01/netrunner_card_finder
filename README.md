@@ -14,6 +14,9 @@
 - Clear images displayed tidily in a grid.
 - Simple compilation and launch steps.
 #
+### Screenshots:
+
+#
 ### Requirements:
 - `GNU Make`
 - `CMake 3.5+`
@@ -52,6 +55,7 @@ chmod -v 744 image_grabber.py
 - Complete local API storage for more efficient and rapid search operation.
 - Add data and statistics information for each card inline, as a tooltip, or in a new window, etc.
 - Add more error handling.
+- Add regex for handling search criteria.
 #
 ### Known issues:
 - Complete search reset is slower than ideal (see comments in source).

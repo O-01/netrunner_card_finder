@@ -88,7 +88,8 @@ void MainWindow::on_cardList_itemClicked(QListWidgetItem *item)
     for (dom::element element : data)
     {
         std::string_view title = element["attributes"]["title"];
-        if (std::strstr(title.data(), item_name.c_str()) == title.data())
+        if (std::strstr(title.data(), item_name.c_str()) == title.data() &&
+            title.length() == item_name.length())
         {
             dom::array printing = element["attributes"]["printing_ids"];
             int row = 0, col = 0;
@@ -136,7 +137,8 @@ void MainWindow::on_cardList_itemSelectionChanged()
     for (dom::element element : data)
     {
         std::string_view title = element["attributes"]["title"];
-        if (std::strstr(title.data(), item_name.c_str()) == title.data())
+        if (std::strstr(title.data(), item_name.c_str()) == title.data() &&
+            title.length() == item_name.length())
         {
             dom::array printing = element["attributes"]["printing_ids"];
             int row = 0, col = 0;
