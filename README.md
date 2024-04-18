@@ -33,11 +33,12 @@ Navigate to repository root directory and run the following commands:
 cmake -S ./ -B nrcf
 make -C nrcf
 ```
-Run executable by entering the following command:
+Navigate to newly created build directory and run executable by entering the following commands:
 ```
-./ncrf/netrunner_card_finder
+cd nrcf
+./netrunner_card_finder
 ```
-OR locate the executable file within preferred file explorer GUI at above location (`./` being the root of the repository) and launch.
+OR locate the executable file within preferred file explorer at location `./nrcf` (`./` being the root of the repository) and launch.
 
 If necessary, `image_grabber.py` may be used to obtain or update `cards.json` data and/or card images:
 ```
