@@ -1,8 +1,6 @@
 # Netrunner Card Finder
 ### C++ Hack Sprint ~ Spring 2024
-
 **Netrunner Card Finder** is a compact tool created in C++ using the Qt framework that utilizes information from the card information [API](https://api-preview.netrunnerdb.com/) provided by [NetrunnerDB](https://netrunnerdb.com/) to filter Netrunner cards by **name**, **side**, **faction**, and/or **type**. Once the desired filters have been applied, a list of matching cards is displayed, any of the items of which may be selected to display the corresponding images related to that card's possible various printings.
-
 > Learn more about Netrunner @ [BGG](https://boardgamegeek.com/boardgame/124742/android-netrunner) or [Null Signal Games](https://nullsignal.games/about/netrunner/). *Android: Netrunner* is a trademark of Fantasy Flight Games (FFG) and is based on the original *Netrunner* card game created by Richard Garfield and produced by Wizards of the Coast (WotC).
 #
 ### Features:
@@ -13,7 +11,6 @@
 - Drop-down boxes available to further filter cards by side, faction, or type.
 - Clear images displayed tidily in a grid.
 - Simple compilation and launch steps.
-
 #
 ### Requirements:
 - [`GNU Make`](https://www.gnu.org/software/make/)
@@ -54,7 +51,6 @@ chmod -v 744 image_grabber.py
 ![screenshot_3](https://github.com/O-01/netrunner_card_finder/assets/122712385/1c316864-5965-4bec-9530-bbabcbf6b43c)
 ![screenshot_1](https://github.com/O-01/netrunner_card_finder/assets/122712385/94bb08ca-73d9-4aef-b1e0-454a9857cf83)
 ![screenshot_4](https://github.com/O-01/netrunner_card_finder/assets/122712385/0f672ce7-e47d-4b71-93ff-0924b66d327f)
-
 #
 ### Possible future improvements:
 - Reduce any remaining redundancies.
@@ -69,3 +65,4 @@ chmod -v 744 image_grabber.py
 #
 ### Author:
 - Sam Ansari : [GitHub](https://github.com/O-01) | [LinkedIn](www.linkedin.com/in/sammy-ansari)
+#
